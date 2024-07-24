@@ -9,19 +9,27 @@ import io from 'socket.io-client';
 import { useForm } from "react-hook-form";
 import flightData from '@/flightData.json';
 import { addRandomFlights, generateRandomFlight, getFlightsData } from "@/lib/actions/flight-actions";
-// import { useSocket } from "@/context/socket-provider";
+import { useDebounce } from "usehooks-ts";
+import Select from 'react-select/async';
+import debounce from 'lodash.debounce';
+import FlightStatus from "@/model/FlightStatus";
 
-// Define the Flight type
+interface Status {
+  _id: string;
+  status: string;
+}
 interface Flight {
   _id: string
   number: string;
   origin: string;
   destination: string;
   departure_time: string;
-  status: string;
-  airline?: string; // Optional if not always available
-  type?: string; // Optional if not always available
+  status: Status;
+  airline?: string;
+  type?: string;
 }
+
+
 
 const ITEMS_PER_PAGE = 10;
 
@@ -29,28 +37,97 @@ function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({ airline: '', flightType: '', status: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
-const [editingStatus,setEditingStatus]=useState(false);
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [airlineList, setArilineList] = useState([])
+  const [status, setStatus] = useState<Status[]>([]);
+  const [origin, setOrigin] = useState('');
+  const [filters, setFilters] = useState({
+    number: '',
+    origin: '',
+    destination: '',
+    status: '',
+    airline: '',
+    flightType: '',
+  });
 
-const STATUS_OPTIONS= [
-  "Delayed",
-  "Cancelled",
-  "In-flight",
-  "Scheduled/En-Route",
-]
-  // const {socket}=useSocket()
+  const debouncedOrigin = useDebounce(filters.origin, 300)
+
+
+  const STATUS_OPTIONS = [
+    "Delayed",
+    "Cancelled",
+    "In-flight",
+    "Scheduled/En-Route",
+  ]
+
 
   const form = useForm();
 
-  const fetchFlights = useCallback(async () => {
+  useEffect(() => {
+    const checkUsernameUnique = async () => {
+      if (debouncedOrigin) {
+        // setIsCheckingUsername(true);
+        setOrigin(''); // Reset message
+        try {
+          const response = await fetchFlights({
+            origin: debouncedOrigin
+          })
+          console.log(response)
+          // setOrigin(response.data.message);
+        } catch (error) {
+          const axiosError = error as AxiosError;
+          // setOrigin(
+          //   axiosError.response?.data.message ?? 'Error checking username'
+          // );
+        } finally {
+          // setOrigin(false);
+        }
+      }
+    };
+    checkUsernameUnique();
+  }, [debouncedOrigin]);
+
+  const getAirlineList = async () => {
+    try {
+      const response = await axios.get("/api/airline");
+      // console.log("🚀 ~ getAirlineList ~ response", response.data.data);
+      setArilineList(response.data.data)
+      return response.data.data;
+    } catch (error) {
+      console.log("🚀 ~ getAirlineList ~ error", error)
+
+    }
+  }
+
+  const statusList = async () => {
+    try {
+      const response = await axios.get("/api/airline-status");
+      // console.log("🚀 ~ statusList ~ response", response.data.data);
+      setStatus(response.data.data)
+      return response.data.data;
+
+    } catch (error) {
+      console.log("🚀 ~ statusList ~ error:", error);
+
+    }
+  }
+
+  function formatDateTime(isoString: any) {
+    const date = new Date(isoString);
+    const formattedDate = date.toISOString().split('T')[0];
+    const formattedTime = date.toISOString().split('T')[1].split('.')[0];
+    return `${formattedDate} ${formattedTime}`;
+  }
+
+  const fetchFlights = useCallback(async (params = {}) => {
     setIsLoading(true);
     try {
-      const response = await axios.get("/api/flight-data");
-      console.log("🚀 ~ fetchFlights ~ response:", response.data.data);
+      const response = await axios.get("/api/flight-data", { params });
+      // console.log("🚀 ~ fetchFlights ~ response:", response.data.data);
       setFlights(response.data.data);
-      // setFlights()
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
       toast({
@@ -62,40 +139,39 @@ const STATUS_OPTIONS= [
       setIsLoading(false);
     }
   }, [toast]);
+  const loadOptions = async (inputValue: string, endpoint: string) => {
+    const response = await fetchFlights({
+      [endpoint]: inputValue
+    });
+
+    // Ensure response.data is an array
+    const data = Array.isArray(response.data)
+      ? response.data.map((item: any) => ({ value: item[endpoint], label: item[endpoint] }))
+      : [];
+
+    return data;
+  };
+
+
+
+  const debouncedLoadOptions = useCallback(debounce(loadOptions, 300), []);
+
 
   useEffect(() => {
     fetchFlights();
-    // generateRandomFlight()
-    addRandomFlights()
+    // addRandomFlights()
+    getAirlineList()
+    statusList()
   }, [fetchFlights]);
-
-  function formatDateTime(isoString : any) {
-    const date = new Date(isoString);
-    const formattedDate = date.toISOString().split('T')[0]; // Extracts the date part
-    const formattedTime = date.toISOString().split('T')[1].split('.')[0]; // Extracts the time part without milliseconds
-    return `${formattedDate} ${formattedTime}`;
-  }
-  
-  const isoString = "2024-07-25T00:00:02.246Z";
-  console.log(formatDateTime(isoString)); // Output: "2024-07-25 00:00:02"
-  
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
 
   const filteredFlights = flights.filter(flight => {
     return (
-      (flight.number.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      flight.origin.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      flight.destination.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (flight.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flight.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flight.destination.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (filters.airline ? flight.airline === filters.airline : true) &&
-      (filters.flightType ? flight.type === filters.flightType : true) &&
-      (filters.status ? flight.status === filters.status : true)
+      (filters.flightType ? flight.type === filters.flightType : true)
+      // (filters.status.status ? flight.status.status === filters.status.status : true)
     );
   });
 
@@ -109,53 +185,80 @@ const STATUS_OPTIONS= [
     }
   };
 
+
+  const handleSearch = () => {
+    fetchFlights(filters);
+  };
+
   return (
     <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
       <h1 className="text-4xl font-bold mb-4">Flight Management Dashboard</h1>
-      
+
+
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Search Flights</h2>
-        <input
-          type="text"
-          placeholder="Search by number, origin, or destination"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="input input-bordered w-full p-2 mb-2"
-        />
-        <div className="flex space-x-4 mb-4">
+        <div className="flex flex-wrap space-x-4 mb-4">
+          <Select
+            name="number"
+            placeholder="Search by number"
+            loadOptions={async (inputValue) => await debouncedLoadOptions(inputValue, 'number')}
+            // onChange={handleInputChange}
+            className="flex-grow mb-2"
+          />
+          <Select
+            name="origin"
+            placeholder="Search by origin"
+            loadOptions={async (inputValue) => await debouncedLoadOptions(inputValue, 'origin')}
+            // onChange={handleInputChange}
+            className="flex-grow mb-2"
+          />
+          <Select
+            name="destination"
+            placeholder="Search by destination"
+            loadOptions={async (inputValue) => {
+              const data = await debouncedLoadOptions(inputValue, 'destination')
+              return data
+            }}
+            className="flex-grow mb-2"
+          />
           <select
             name="airline"
-            value={filters.airline}
-            onChange={handleFilterChange}
-            className="select select-bordered w-full"
+            onChange={async (e) => {
+              const selectedValue = e.target.value;
+              await fetchFlights({
+                airline: selectedValue
+              })
+            }}
+            className="select select-bordered p-2 mb-2 flex-grow border-2"
           >
-            <option value="">All Airlines</option>
-            <option value="Delta">Delta</option>
-            <option value="United">United</option>
-            {/* Add more airlines */}
+            <option value="" disabled selected>Select Airline</option>
+            {
+              airlineList && airlineList.map((airline: any) => (
+                <option key={airline._id} value={airline.name}>{airline.name}</option>
+              ))
+            }
           </select>
-          <select
-            name="flightType"
-            value={filters.flightType}
-            onChange={handleFilterChange}
-            className="select select-bordered w-full"
-          >
-            <option value="">All Types</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Military">Military</option>
-            <option value="Private">Private</option>
-          </select>
-          <select
+          {/* <select
             name="status"
             value={filters.status}
-            onChange={handleFilterChange}
-            className="select select-bordered w-full"
+            onChange={async (e) => {
+              const selectedValue = e.target.value;
+              await fetchFlights({
+                status: selectedValue
+              })
+            }}
+            className="select select-bordered p-2 mb-2 flex-grow border-2"
           >
-            <option value="">All Statuses</option>
-            <option value="On Time">On Time</option>
-            <option value="Delayed">Delayed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
+
+            {
+              status && status.map((status: any) => (
+                <option key={status._id} value={status.status}>{status.status}</option>
+              ))
+            }
+          </select> */}
+          {/* <button onClick={handleSearch} className="btn btn-primary p-2 mb-2 flex-grow">
+            Search
+          </button> */}
         </div>
       </div>
 
@@ -178,6 +281,7 @@ const STATUS_OPTIONS= [
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Flight Number</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Airline</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scheduled Departure Time</th>
@@ -188,22 +292,49 @@ const STATUS_OPTIONS= [
             {currentFlights.map((flight) => (
               <tr key={flight.number}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{flight.number}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{flight.airline}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{flight.origin}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{flight.destination}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDateTime( flight.departure_time)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDateTime(flight.departure_time)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {true? (
+                  {true ? (
                     <select
-                      value={flight.status}
-                      // onChange={(e) => handleStatusChange(flight._id, e.target.value)}
+                      value={flight.status._id}
+                      onChange={(e) => {
+                        const selectedValue = e.target.value;
+                        axios.post(`/api/update-status/${flight._id}/${selectedValue}`)
+                          .then(response => {
+                            // console.log("🚀 ~ response", response);
+                            fetchFlights()
+                            toast({
+                              title: "Success",
+                              description: "Flight status updated",
+                              variant: "default"
+                            });
+                          })
+                          .catch(error => {
+                            // console.log("🚀 ~ error", error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to update flight status",
+                              variant: "destructive"
+                            });
+                          });
+                      }}
                       className="p-2 border border-gray-300 rounded w-full"
                     >
-                      {STATUS_OPTIONS.map(status => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
+                      {status.map((statusItem) => {
+                        console.log(statusItem, flight.status)
+                        return (
+                          <option key={statusItem._id} value={statusItem._id}>
+                            {statusItem.status}
+                          </option>
+                        )
+                      })}
                     </select>
+
                   ) : (
-                    flight.status
+                    flight.status.status
                   )}
                 </td>
               </tr>

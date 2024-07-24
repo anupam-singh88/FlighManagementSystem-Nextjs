@@ -23,6 +23,10 @@ const flightSchema = new mongoose.Schema(
       ref: "FlightStatus",
       required: true,
     },
+    airline: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Airline",
+    },
   },
   { timestamps: true }
 );

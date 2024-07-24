@@ -1,12 +1,13 @@
-"use server"
+"use server";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { faker } from '@faker-js/faker';
 import mongoose from "mongoose";
-import FlightStatus from "@/model/FlightStatus";
 import FlightModel from "@/model/Flight";
+import Airline from "@/model/Airline";
+import FlightStatus from "@/model/FlightStatus";
 
 class CustomError extends Error {
   statusCode: number;
@@ -30,6 +31,9 @@ const getFlightsData = async () => {
 };
 
 const generateRandomFlight = async () => {
+  const airlines = await Airline.find();
+  const randomAirline = airlines[Math.floor(Math.random() * airlines.length)];
+
   let flightStatus = await FlightStatus.findOne({ status: "Scheduled/En-Route" });
 
   if (!flightStatus) {
@@ -47,6 +51,7 @@ const generateRandomFlight = async () => {
     origin,
     destination,
     departure_time: departureTime,
+    airline: randomAirline._id,
     status
   };
 };
@@ -55,7 +60,7 @@ const addRandomFlights = async () => {
   try {
     for (let i = 0; i < 20; i++) {
       const flightData = await generateRandomFlight();
-      const newFlight = new FlightModel(flightData);
+      // const newFlight = new FlightModel(flightData);
       // await newFlight.save();
       // console.log(`Flight data ${i + 1} saved:`, flightData);
     }
