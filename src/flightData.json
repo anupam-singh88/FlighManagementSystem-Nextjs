@@ -1,0 +1,497 @@
+[
+  {
+    "number": "AA123",
+    "origin": "JFK",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-20T15:00:00Z",
+    "status": "On Time",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "UA456",
+    "origin": "ORD",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-20T16:00:00Z",
+    "status": "Delayed",
+    "airline": "United Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "DL789",
+    "origin": "ATL",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-20T17:00:00Z",
+    "status": "On Time",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "SW101",
+    "origin": "MDW",
+    "destination": "LAS",
+    "scheduledDepartureTime": "2024-07-20T18:00:00Z",
+    "status": "Cancelled",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "B6202",
+    "origin": "JFK",
+    "destination": "BOS",
+    "scheduledDepartureTime": "2024-07-20T19:00:00Z",
+    "status": "On Time",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "F123",
+    "origin": "DCA",
+    "destination": "CLT",
+    "scheduledDepartureTime": "2024-07-20T20:00:00Z",
+    "status": "Delayed",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "G234",
+    "origin": "SFO",
+    "destination": "SEA",
+    "scheduledDepartureTime": "2024-07-20T21:00:00Z",
+    "status": "On Time",
+    "airline": "Alaska Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "H345",
+    "origin": "LAX",
+    "destination": "SJC",
+    "scheduledDepartureTime": "2024-07-20T22:00:00Z",
+    "status": "Cancelled",
+    "airline": "Hawaiian Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "I456",
+    "origin": "ORD",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-21T00:00:00Z",
+    "status": "On Time",
+    "airline": "Allegiant Air",
+    "type": "Commercial"
+  },
+  {
+    "number": "J567",
+    "origin": "DFW",
+    "destination": "DEN",
+    "scheduledDepartureTime": "2024-07-21T01:00:00Z",
+    "status": "Delayed",
+    "airline": "Spirit Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "K678",
+    "origin": "LAX",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-21T02:00:00Z",
+    "status": "On Time",
+    "airline": "Sun Country Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "L789",
+    "origin": "MIA",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-21T03:00:00Z",
+    "status": "Cancelled",
+    "airline": "Silver Airways",
+    "type": "Commercial"
+  },
+  {
+    "number": "M890",
+    "origin": "BOS",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-21T04:00:00Z",
+    "status": "On Time",
+    "airline": "Alaska Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "N901",
+    "origin": "SFO",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-21T05:00:00Z",
+    "status": "Delayed",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "O012",
+    "origin": "LAX",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-21T06:00:00Z",
+    "status": "On Time",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "P123",
+    "origin": "JFK",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-21T07:00:00Z",
+    "status": "Cancelled",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "Q234",
+    "origin": "ORD",
+    "destination": "SFO",
+    "scheduledDepartureTime": "2024-07-21T08:00:00Z",
+    "status": "On Time",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "R345",
+    "origin": "MIA",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-21T09:00:00Z",
+    "status": "Delayed",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "S456",
+    "origin": "LAX",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-21T10:00:00Z",
+    "status": "On Time",
+    "airline": "United Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "T567",
+    "origin": "SFO",
+    "destination": "SEA",
+    "scheduledDepartureTime": "2024-07-21T11:00:00Z",
+    "status": "Cancelled",
+    "airline": "Alaska Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "U678",
+    "origin": "DFW",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-21T12:00:00Z",
+    "status": "On Time",
+    "airline": "Spirit Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "V789",
+    "origin": "ORD",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-21T13:00:00Z",
+    "status": "Delayed",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "W890",
+    "origin": "JFK",
+    "destination": "BOS",
+    "scheduledDepartureTime": "2024-07-21T14:00:00Z",
+    "status": "Cancelled",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "X901",
+    "origin": "MIA",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-21T15:00:00Z",
+    "status": "On Time",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "Y012",
+    "origin": "BOS",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-21T16:00:00Z",
+    "status": "Delayed",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "Z123",
+    "origin": "LAX",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-21T17:00:00Z",
+    "status": "On Time",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "AA234",
+    "origin": "SFO",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-21T18:00:00Z",
+    "status": "Cancelled",
+    "airline": "Alaska Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "BB345",
+    "origin": "ORD",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-21T19:00:00Z",
+    "status": "On Time",
+    "airline": "United Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "CC456",
+    "origin": "JFK",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-21T20:00:00Z",
+    "status": "Delayed",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "DD567",
+    "origin": "MIA",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-21T21:00:00Z",
+    "status": "Cancelled",
+    "airline": "Spirit Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "EE678",
+    "origin": "LAX",
+    "destination": "SFO",
+    "scheduledDepartureTime": "2024-07-21T22:00:00Z",
+    "status": "On Time",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "FF789",
+    "origin": "ORD",
+    "destination": "SEA",
+    "scheduledDepartureTime": "2024-07-21T23:00:00Z",
+    "status": "Delayed",
+    "airline": "Alaska Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "GG890",
+    "origin": "JFK",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-22T00:00:00Z",
+    "status": "On Time",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "HH901",
+    "origin": "DFW",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-22T01:00:00Z",
+    "status": "Cancelled",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "II012",
+    "origin": "SFO",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-22T02:00:00Z",
+    "status": "On Time",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "JJ123",
+    "origin": "LAX",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-22T03:00:00Z",
+    "status": "Delayed",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "KK234",
+    "origin": "MIA",
+    "destination": "SFO",
+    "scheduledDepartureTime": "2024-07-22T04:00:00Z",
+    "status": "On Time",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "LL345",
+    "origin": "ORD",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-22T05:00:00Z",
+    "status": "Cancelled",
+    "airline": "Spirit Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "MM456",
+    "origin": "SFO",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-22T06:00:00Z",
+    "status": "On Time",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "NN567",
+    "origin": "JFK",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-22T07:00:00Z",
+    "status": "Delayed",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "OO678",
+    "origin": "LAX",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-22T08:00:00Z",
+    "status": "On Time",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "PP789",
+    "origin": "DFW",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-22T09:00:00Z",
+    "status": "Cancelled",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "QQ890",
+    "origin": "ORD",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-22T10:00:00Z",
+    "status": "On Time",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "RR901",
+    "origin": "JFK",
+    "destination": "SFO",
+    "scheduledDepartureTime": "2024-07-22T11:00:00Z",
+    "status": "Delayed",
+    "airline": "Spirit Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "SS012",
+    "origin": "LAX",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-22T12:00:00Z",
+    "status": "On Time",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "TT123",
+    "origin": "MIA",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-22T13:00:00Z",
+    "status": "Cancelled",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "UU234",
+    "origin": "SFO",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-22T14:00:00Z",
+    "status": "On Time",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "VV345",
+    "origin": "ORD",
+    "destination": "BOS",
+    "scheduledDepartureTime": "2024-07-22T15:00:00Z",
+    "status": "Delayed",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  },
+  {
+    "number": "WW456",
+    "origin": "JFK",
+    "destination": "LAX",
+    "scheduledDepartureTime": "2024-07-22T16:00:00Z",
+    "status": "Cancelled",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "XX567",
+    "origin": "LAX",
+    "destination": "ORD",
+    "scheduledDepartureTime": "2024-07-22T17:00:00Z",
+    "status": "On Time",
+    "airline": "American Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "YY678",
+    "origin": "MIA",
+    "destination": "SFO",
+    "scheduledDepartureTime": "2024-07-22T18:00:00Z",
+    "status": "Delayed",
+    "airline": "Spirit Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "ZZ789",
+    "origin": "DFW",
+    "destination": "JFK",
+    "scheduledDepartureTime": "2024-07-22T19:00:00Z",
+    "status": "On Time",
+    "airline": "Frontier Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "AAA890",
+    "origin": "ORD",
+    "destination": "DFW",
+    "scheduledDepartureTime": "2024-07-22T20:00:00Z",
+    "status": "Cancelled",
+    "airline": "Delta Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "BBB901",
+    "origin": "JFK",
+    "destination": "MIA",
+    "scheduledDepartureTime": "2024-07-22T21:00:00Z",
+    "status": "On Time",
+    "airline": "Southwest Airlines",
+    "type": "Commercial"
+  },
+  {
+    "number": "CCC012",
+    "origin": "LAX",
+    "destination": "SEA",
+    "scheduledDepartureTime": "2024-07-22T22:00:00Z",
+    "status": "Delayed",
+    "airline": "JetBlue",
+    "type": "Commercial"
+  }
+]
