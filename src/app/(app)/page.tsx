@@ -1,61 +1,150 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import TableComponent from '@/components/TableComponent';
+import { useCallback, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
+import axios, { AxiosError } from "axios";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';
-import { Mail } from 'lucide-react'; // Assuming you have an icon for messages
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Autoplay from 'embla-carousel-autoplay';
-import messages from '@/messages.json';
+import { Loader2 } from 'lucide-react';
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
+const socket: Socket = io('http://localhost:3001');
+interface Status {
+  _id: string;
+  status: string;
+}
+interface Flight {
+  _id: string
+  number: string;
+  origin: string;
+  destination: string;
+  departure_time: string;
+  status: Status;
+  airline?: string;
+  type?: string;
+}
+const ITEMS_PER_PAGE = 10;
+
 
 export default function Home() {
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState<Status[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { toast } = useToast();
+
+
+  const [filters, setFilters] = useState({
+    number: '',
+    origin: '',
+    destination: '',
+    status: '',
+    airline: '',
+    flightType: '',
+  });
+  const filteredFlights = flights.filter(flight => {
+    return (
+      (flight.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flight.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flight.destination.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (filters.airline ? flight.airline === filters.airline : true) &&
+      (filters.flightType ? flight.type === filters.flightType : true)
+      // (filters.status.status ? flight.status.status === filters.status.status : true)
+    );
+  });
+
+  const fetchFlights = useCallback(async (params = {}) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("/api/flight-data", { params });
+      await statusList()
+      // console.log("🚀 ~ fetchFlights ~ response:", response.data.data);
+      setFlights(response.data.data);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      toast({
+        title: "Error",
+        description: "Failed to fetch flights",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
+
+
+  useEffect(() => {
+    fetchFlights();
+    // statusList();
+    // socket.on('flight', (data: any) => {
+    //   console.log("🚀 ~ socket.on ~ data", data)
+    //   fetchFlights();
+
+  }, [])
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+
+  const totalPages = Math.ceil(filteredFlights.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentFlights = filteredFlights.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const statusList = async () => {
+    try {
+      const response = await axios.get("/api/airline-status");
+      // console.log("🚀 ~ statusList ~ response", response.data.data);
+      setStatus(response.data.data)
+      return response.data.data;
+
+    } catch (error) {
+      console.log("🚀 ~ statusList ~ error:", error);
+
+    }
+  }
   return (
     <>
-      {/* Main content */}
       <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-24 py-12 bg-gray-800 text-white">
-        <section className="text-center mb-8 md:mb-12">
-          {/* <h1 className="text-3xl md:text-5xl font-bold">
-            Dive into the World of Anonymous Feedback
-          </h1> */}
-          <p className="mt-3 md:mt-4 text-base md:text-lg">
+        {/* <section className="text-center mb-8 md:mb-12"> */}
+        {/* <p className="mt-3 md:mt-4 text-base md:text-lg">
             Flight Management Software - Built On NextJS
-          </p>
-        </section>
+          </p> */}
+        {isLoading ? <>
+          <Loader2 className=" h-10 w-10 animate-spin" />
+          <p className="text-center text-xl">Loading...</p>
+        </> :
+          <>
+            <TableComponent currentFlights={currentFlights} status={status} fetchFlights={fetchFlights} />
+            {/* </section> */}
+            <div className="flex justify-between items-center mt-4 w-full">
+              <Button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                variant="outline"
+                className='text-black'
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                variant="destructive"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        }
 
-        {/* Carousel for Messages */}
-        {/* <Carousel
-          plugins={[Autoplay({ delay: 2000 })]}
-          className="w-full max-w-lg md:max-w-xl"
-        >
-          <CarouselContent>
-            {messages.map((message, index) => (
-              <CarouselItem key={index} className="p-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{message.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col md:flex-row items-start space-y-2 md:space-y-0 md:space-x-4">
-                    <Mail className="flex-shrink-0" />
-                    <div>
-                      <p>{message.content}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {message.received}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel> */}
       </main>
 
       {/* Footer */}
@@ -65,4 +154,4 @@ export default function Home() {
     </>
   );
 }
-        
+

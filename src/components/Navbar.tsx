@@ -29,7 +29,7 @@ function Navbar() {
     socket.on('disconnect', handleDisconnect);
 
     // Listen for new row data
-    socket.on('newRow', (rowData) => {
+    socket.on('newFlight', (rowData) => {
       console.log('Received newRow:', rowData);
       // setRows((prevRows) => [...prevRows, rowData]);
     });

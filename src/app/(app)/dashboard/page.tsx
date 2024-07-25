@@ -5,15 +5,15 @@ import { useToast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
 import { Loader2, RefreshCcw } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import io from 'socket.io-client';
 import { useForm } from "react-hook-form";
 import flightData from '@/flightData.json';
-import { addRandomFlights, generateRandomFlight, getFlightsData } from "@/lib/actions/flight-actions";
+import { addRandomFlights, generateRandomFlight, } from "@/lib/actions/flight-actions";
 import { useDebounce } from "usehooks-ts";
 import Select from 'react-select/async';
 import debounce from 'lodash.debounce';
 import FlightStatus from "@/model/FlightStatus";
-
+import { io, Socket } from 'socket.io-client';
+import TableComponent from '@/components/TableComponent'
 interface Status {
   _id: string;
   status: string;
@@ -29,6 +29,7 @@ interface Flight {
   type?: string;
 }
 
+const socket: Socket = io('http://localhost:3001');
 
 
 const ITEMS_PER_PAGE = 10;
@@ -51,6 +52,39 @@ function Page() {
     airline: '',
     flightType: '',
   });
+
+  useEffect(() => {
+
+
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      // setIsConnected(true);
+    });
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+      // setIsConnected(false);
+    });
+
+    // Listen for new row data
+    socket.on('newFlight', (rowData) => {
+      console.log('Received newRow:', rowData);
+      setFlights((prevFlights) => {
+        return [rowData, ...prevFlights]
+      })
+      // setRows((prevRows) => [...prevRows, rowData]);
+    });
+
+    // Clean up the event listeners on component unmount
+    return () => {
+      socket.off('connect', () => {
+        console.log('Connected to server')
+      });
+      socket.off('disconnect', () => {
+        console.log('Disconnected from server');
+      });
+      socket.off('newRow');
+    };
+  }, []);
 
   const debouncedOrigin = useDebounce(filters.origin, 300)
 
@@ -192,7 +226,7 @@ function Page() {
 
   return (
     <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
-      <h1 className="text-4xl font-bold mb-4">Flight Management Dashboard</h1>
+      <h1 className="text-4xl font-bold mb-4">Admin Dashboard - You can change flight status</h1>
 
 
       <div className="mb-4">
@@ -202,7 +236,13 @@ function Page() {
             name="number"
             placeholder="Search by number"
             loadOptions={async (inputValue) => await debouncedLoadOptions(inputValue, 'number')}
-            // onChange={handleInputChange}
+            onChange={(e: any) => {
+              // console.log("🚀 ~ e", e)
+              setFilters({
+                ...filters,
+                number: e.value
+              })
+            }}
             className="flex-grow mb-2"
           />
           <Select
@@ -238,27 +278,23 @@ function Page() {
               ))
             }
           </select>
-          {/* <select
-            name="status"
-            value={filters.status}
-            onChange={async (e) => {
-              const selectedValue = e.target.value;
-              await fetchFlights({
-                status: selectedValue
-              })
-            }}
-            className="select select-bordered p-2 mb-2 flex-grow border-2"
-          >
 
-            {
-              status && status.map((status: any) => (
-                <option key={status._id} value={status.status}>{status.status}</option>
-              ))
-            }
-          </select> */}
-          {/* <button onClick={handleSearch} className="btn btn-primary p-2 mb-2 flex-grow">
+          <button onClick={handleSearch} className="btn btn-primary p-2 mb-2 flex-grow border-2">
             Search
-          </button> */}
+          </button>
+          <button onClick={() => {
+            setFilters({
+              number: '',
+              origin: '',
+              destination: '',
+              status: '',
+              airline: '',
+              flightType: '',
+            })
+            fetchFlights()
+          }} className="btn btn-primary p-2 mb-2 flex-grow border-2">
+            Clear
+          </button>
         </div>
       </div>
 
@@ -277,7 +313,7 @@ function Page() {
       </Button>
 
       <div className="mt-4 overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        {/* <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Flight Number</th>
@@ -340,7 +376,8 @@ function Page() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table> */}
+        <TableComponent currentFlights={currentFlights} status={status} isAdmin={true} fetchFlights={fetchFlights} />
       </div>
 
       <div className="flex justify-between items-center mt-4">

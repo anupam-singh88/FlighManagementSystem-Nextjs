@@ -17,9 +17,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { signInSchema } from '@/schemas/signInSchema';
+import { useState } from 'react';
 
 export default function SignInForm() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -27,15 +29,19 @@ export default function SignInForm() {
       identifier: '',
       password: '',
     },
+    mode: 'onChange', // Enable validation on change
   });
 
   const { toast } = useToast();
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    setLoading(true);
     const result = await signIn('credentials', {
       redirect: false,
       identifier: data.identifier,
       password: data.password,
     });
+
+    setLoading(false);
 
     if (result?.error) {
       if (result.error === 'CredentialsSignin') {
@@ -58,14 +64,18 @@ export default function SignInForm() {
     }
   };
 
+  const identifier = form.watch('identifier');
+  const password = form.watch('password');
+  const isFormValid = identifier && password;
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-800">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Welcome Back to True Feedback
+          <h1 className="text-2xl font-extrabold tracking-tight lg:text-3xl mb-2">
+            Flight Management Software
           </h1>
-          <p className="mb-4">Sign in to continue your secret conversations</p>
+          <h3 className="mb-4">Sign In</h3>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -74,7 +84,7 @@ export default function SignInForm() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email/Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <Input {...field} />
                   <FormMessage />
                 </FormItem>
@@ -91,7 +101,9 @@ export default function SignInForm() {
                 </FormItem>
               )}
             />
-            <Button className='w-full' type="submit">Sign In</Button>
+            <Button className='w-full' type="submit" disabled={loading || !isFormValid}>
+              {loading ? 'Signing In...' : 'Sign In'}
+            </Button>
           </form>
         </Form>
         <div className="text-center mt-4">
@@ -106,3 +118,6 @@ export default function SignInForm() {
     </div>
   );
 }
+
+
+

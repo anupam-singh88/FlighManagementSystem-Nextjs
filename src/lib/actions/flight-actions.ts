@@ -1,13 +1,9 @@
 "use server";
-
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import { faker } from '@faker-js/faker';
-import mongoose from "mongoose";
-import FlightModel from "@/model/Flight";
-import Airline from "@/model/Airline";
-import FlightStatus from "@/model/FlightStatus";
+import Airline from "../../model/Airline";
+import FlightStatus from "../../model/FlightStatus";
+import FlightModel from "../../model/Flight";
+import dbConnect from '../dbConnect';
 
 class CustomError extends Error {
   statusCode: number;
@@ -18,19 +14,20 @@ class CustomError extends Error {
   }
 }
 
-const getFlightsData = async () => {
-  const session = await getServerSession(authOptions);
+// const getFlightsData = async () => {
+//   const session = await getServerSession(authOptions);
 
-  try {
-    // Your logic to get flights data
-    throw new CustomError("Sample error", 404); // Throwing custom error with status code
-  } catch (error) {
-    const statusCode = (error as CustomError).statusCode || 500;
-    redirect(`/error?error=${encodeURIComponent((error as Error).message)}&status=${statusCode}`);
-  }
-};
+//   try {
+//     // Your logic to get flights data
+//     throw new CustomError("Sample error", 404); // Throwing custom error with status code
+//   } catch (error) {
+//     const statusCode = (error as CustomError).statusCode || 500;
+//     redirect(`/error?error=${encodeURIComponent((error as Error).message)}&status=${statusCode}`);
+//   }
+// };
 
 const generateRandomFlight = async () => {
+  // dbConnect()
   const airlines = await Airline.find();
   const randomAirline = airlines[Math.floor(Math.random() * airlines.length)];
 
@@ -58,15 +55,28 @@ const generateRandomFlight = async () => {
 
 const addRandomFlights = async () => {
   try {
-    for (let i = 0; i < 20; i++) {
       const flightData = await generateRandomFlight();
-      // const newFlight = new FlightModel(flightData);
-      // await newFlight.save();
-      // console.log(`Flight data ${i + 1} saved:`, flightData);
-    }
+      console.log("🚀 ~ addRandomFlights ~ flightData:", flightData);
+      const newFlight = new FlightModel(flightData);
+      const savedFlight = await newFlight.save();
+
+      // Populate the airline field
+      const populatedFlight = await FlightModel.findById(savedFlight._id).populate('airline');
+
+      // Extract only the airline name
+      const flightWithAirlineName = {
+          ...populatedFlight.toObject(),
+          airline: populatedFlight.airline.name
+      };
+
+      return flightWithAirlineName;
   } catch (error) {
-    console.error('Error generating or saving flight data:', error);
+      console.error('Error generating or saving flight data:', error);
+      throw error;
   }
 };
 
-export { getFlightsData, generateRandomFlight, addRandomFlights };
+
+
+
+export {  generateRandomFlight, addRandomFlights };

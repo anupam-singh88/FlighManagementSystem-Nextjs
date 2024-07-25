@@ -79,10 +79,16 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error('Error registering user', error)
+        // Custom logic for duplication error
+        if ((error as any).code === 11000 && (error as any).keyPattern && (error as any).keyPattern.username) {
+            return new Response(JSON.stringify({
+                success: false,
+                message: "Username needs to be unique"
+            }), { status: 400 });
+        }
         return Response.json({
             success: false,
-            message: "Error registering user"
-
+            message: (error as Error).message || "Error registering user"
         }, {status: 500})
     }
 }

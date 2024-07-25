@@ -9,16 +9,16 @@ export async function GET(request: Request) {
     const query = url.searchParams;
 
     const filters: any = {};
-    if (query.has('number')) {
+    if (query.has('number') && query.get('number')) {
         filters.number = { $regex: query.get('number'), $options: 'i' };
     }
-    if (query.has('origin')) {
+    if (query.has('origin') && query.get('origin')) {
         filters.origin = { $regex: query.get('origin'), $options: 'i' };
     }
-    if (query.has('destination')) {
+    if (query.has('destination') && query.get('destination')) {
         filters.destination = { $regex: query.get('destination'), $options: 'i' };
     }
-    if (query.has('airline')) {
+    if (query.has('airline') && query.get('airline')) {
         const airlineName = query.get('airline');
         const airline = await Airline.findOne({ name: { $regex: airlineName, $options: 'i' } });
         if (airline) {
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
             origin: flight.origin,
             destination: flight.destination,
             departure_time: flight.departure_time,
-            status: flight.status, // Only the status string
+            status: flight.status.status, // Only the status string
             airline: flight.airline.name, // Only the airline name
             createdAt: flight.createdAt,
             updatedAt: flight.updatedAt,
