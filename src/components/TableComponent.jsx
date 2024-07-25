@@ -4,9 +4,6 @@ import { useToast } from "@/components/ui/use-toast";
 
 
 const TableComponent = ({ currentFlights, status, isAdmin = false, fetchFlights }) => {
-    console.log("🚀 ~ TableComponent ~ currentFlights:", currentFlights);
-    console.log("🚀 ~ TableComponent ~ status:", status);
-
     const { toast } = useToast();
 
 
@@ -69,6 +66,7 @@ const TableComponent = ({ currentFlights, status, isAdmin = false, fetchFlights 
                                             >
                                                 {status.map((statusItem) => {
                                                     console.log(statusItem, flight.status)
+                                                    console.log(flight.status || flight.status._id)
                                                     return (
                                                         <option key={statusItem._id} value={statusItem._id}>
                                                             {statusItem.status}

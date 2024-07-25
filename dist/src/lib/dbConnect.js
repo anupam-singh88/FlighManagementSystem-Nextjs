@@ -16,7 +16,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const connection = {};
 function dbConnect() {
     return __awaiter(this, void 0, void 0, function* () {
-        // Check if we have a connection to the database or if it's currently connecting
         if (connection.isConnected) {
             console.log('Already connected to the database');
             return;

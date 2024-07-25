@@ -14,6 +14,7 @@ import debounce from 'lodash.debounce';
 import FlightStatus from "@/model/FlightStatus";
 import { io, Socket } from 'socket.io-client';
 import TableComponent from '@/components/TableComponent'
+import { useSocket } from "@/context/SocketProvider";
 interface Status {
   _id: string;
   status: string;
@@ -36,7 +37,6 @@ const ITEMS_PER_PAGE = 10;
 
 function Page() {
   const [isLoading, setIsLoading] = useState(false);
-  const [flights, setFlights] = useState<Flight[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
@@ -52,40 +52,57 @@ function Page() {
     airline: '',
     flightType: '',
   });
+  const [flights, setFlights] = useState<Flight[]>([]);
+  // const socket = useSocket();
+  const { socket, isConnected } = useSocket() || {};
+
 
   useEffect(() => {
+    if (!socket) return;
 
-
-    socket.on('connect', () => {
-      console.log('Connected to server');
-      // setIsConnected(true);
-    });
-    socket.on('disconnect', () => {
-      console.log('Disconnected from server');
-      // setIsConnected(false);
-    });
-
-    // Listen for new row data
     socket.on('newFlight', (rowData) => {
       console.log('Received newRow:', rowData);
       setFlights((prevFlights) => {
-        return [rowData, ...prevFlights]
-      })
-      // setRows((prevRows) => [...prevRows, rowData]);
+        const flightExists = prevFlights.some(flight => flight._id === rowData._id);
+        if (!flightExists) {
+          return [rowData, ...prevFlights];
+        }
+        return prevFlights;
+      });
     });
 
-    // Clean up the event listeners on component unmount
     return () => {
-      socket.off('connect', () => {
-        console.log('Connected to server')
-      });
-      socket.off('disconnect', () => {
-        console.log('Disconnected from server');
-      });
-      socket.off('newRow');
+      socket.off('newFlight');
     };
-  }, []);
+  }, [socket]);
 
+
+  // useEffect(() => {
+  //   socket.on('connect', () => {
+  //     console.log('Connected to server');
+  //   });
+  //   socket.on('disconnect', () => {
+  //     console.log('Disconnected from server');
+  //   });
+
+  //   socket.on('newFlight', (rowData) => {
+  //     console.log('Received newRow:', rowData);
+  //     setFlights((prevFlights) => {
+  //       // Check if the flight already exists in the state
+  //       const flightExists = prevFlights.some(flight => flight._id === rowData._id);
+  //       if (!flightExists) {
+  //         return [rowData, ...prevFlights];
+  //       }
+  //       return prevFlights;
+  //     });
+  //   });
+
+  //   return () => {
+  //     socket.off('connect');
+  //     socket.off('disconnect');
+  //     socket.off('newFlight');
+  //   };
+  // }, []);
   const debouncedOrigin = useDebounce(filters.origin, 300)
 
 

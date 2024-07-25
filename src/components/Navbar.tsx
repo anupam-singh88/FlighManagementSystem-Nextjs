@@ -7,40 +7,43 @@ import { Button } from './ui/button';
 import { User } from 'next-auth';
 import { io, Socket } from 'socket.io-client';
 import { Badge } from './ui/badge';
+import { useSocket } from '@/context/SocketProvider';
 
 const socket: Socket = io('http://localhost:3001');
 
 function Navbar() {
   const { data: session } = useSession();
   const user: User = session?.user;
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
+  const { socket, isConnected } = useSocket() || {};
 
-  useEffect(() => {
-    const handleConnect = () => {
-      console.log('Connected to server');
-      setIsConnected(true);
-    };
-    const handleDisconnect = () => {
-      console.log('Disconnected from server');
-      setIsConnected(false);
-    };
 
-    socket.on('connect', handleConnect);
-    socket.on('disconnect', handleDisconnect);
+  // useEffect(() => {
+  //   const handleConnect = () => {
+  //     console.log('Connected to server');
+  //     setIsConnected(true);
+  //   };
+  //   const handleDisconnect = () => {
+  //     console.log('Disconnected from server');
+  //     setIsConnected(false);
+  //   };
 
-    // Listen for new row data
-    socket.on('newFlight', (rowData) => {
-      console.log('Received newRow:', rowData);
-      // setRows((prevRows) => [...prevRows, rowData]);
-    });
+  //   socket.on('connect', handleConnect);
+  //   socket.on('disconnect', handleDisconnect);
 
-    // Clean up the event listeners on component unmount
-    return () => {
-      socket.off('connect', handleConnect);
-      socket.off('disconnect', handleDisconnect);
-      socket.off('newRow');
-    };
-  }, []);
+  //   // Listen for new row data
+  //   socket.on('newFlight', (rowData) => {
+  //     console.log('Received newRow:', rowData);
+  //     // setRows((prevRows) => [...prevRows, rowData]);
+  //   });
+
+  //   // Clean up the event listeners on component unmount
+  //   return () => {
+  //     socket.off('connect', handleConnect);
+  //     socket.off('disconnect', handleDisconnect);
+  //     socket.off('newRow');
+  //   };
+  // }, []);
 
   return (
     <nav className="p-4 md:p-6 shadow-md bg-gray-900 text-white">

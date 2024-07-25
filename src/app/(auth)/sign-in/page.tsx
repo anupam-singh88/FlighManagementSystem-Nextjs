@@ -29,7 +29,7 @@ export default function SignInForm() {
       identifier: '',
       password: '',
     },
-    mode: 'onChange', // Enable validation on change
+    mode: 'onChange',
   });
 
   const { toast } = useToast();

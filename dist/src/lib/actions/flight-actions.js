@@ -60,12 +60,10 @@ exports.generateRandomFlight = generateRandomFlight;
 const addRandomFlights = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const flightData = yield generateRandomFlight();
-        console.log("🚀 ~ addRandomFlights ~ flightData:", flightData);
         const newFlight = new Flight_1.default(flightData);
         const savedFlight = yield newFlight.save();
         // Populate the airline field
         const populatedFlight = yield Flight_1.default.findById(savedFlight._id).populate('airline');
-        // Extract only the airline name
         const flightWithAirlineName = Object.assign(Object.assign({}, populatedFlight.toObject()), { airline: populatedFlight.airline.name });
         return flightWithAirlineName;
     }

@@ -7,8 +7,9 @@ import axios, { AxiosError } from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { useSocket } from '@/context/SocketProvider';
 
-const socket: Socket = io('http://localhost:3001');
+// const socket: Socket = io('http://localhost:3001');
 interface Status {
   _id: string;
   status: string;
@@ -75,13 +76,28 @@ export default function Home() {
     }
   }, [toast]);
 
+  const { socket, isConnected } = useSocket() || {};
 
   useEffect(() => {
+    if (!socket) return;
+
+    socket.on('newFlight', (rowData: any) => {
+      // console.log('Received newRow:', rowData);
+      setFlights((prevFlights) => {
+        const flightExists = prevFlights.some(flight => flight._id === rowData._id);
+        if (!flightExists) {
+          return [rowData, ...prevFlights];
+        }
+        return prevFlights;
+      });
+    });
+
+    return () => {
+      socket.off('newFlight');
+    };
+  }, [socket]);
+  useEffect(() => {
     fetchFlights();
-    // statusList();
-    // socket.on('flight', (data: any) => {
-    //   console.log("🚀 ~ socket.on ~ data", data)
-    //   fetchFlights();
 
   }, [])
 
@@ -111,17 +127,13 @@ export default function Home() {
   return (
     <>
       <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-24 py-12 bg-gray-800 text-white">
-        {/* <section className="text-center mb-8 md:mb-12"> */}
-        {/* <p className="mt-3 md:mt-4 text-base md:text-lg">
-            Flight Management Software - Built On NextJS
-          </p> */}
         {isLoading ? <>
           <Loader2 className=" h-10 w-10 animate-spin" />
           <p className="text-center text-xl">Loading...</p>
         </> :
           <>
             <TableComponent currentFlights={currentFlights} status={status} fetchFlights={fetchFlights} />
-            {/* </section> */}
+
             <div className="flex justify-between items-center mt-4 w-full">
               <Button
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -147,7 +159,7 @@ export default function Home() {
 
       </main>
 
-      {/* Footer */}
+
       <footer className="text-center p-4 md:p-6 bg-gray-900 text-white">
         © 2024 Pikky AssignMent. All rights reserved.
       </footer>

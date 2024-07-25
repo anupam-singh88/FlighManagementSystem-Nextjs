@@ -56,14 +56,11 @@ const generateRandomFlight = async () => {
 const addRandomFlights = async () => {
   try {
       const flightData = await generateRandomFlight();
-      console.log("🚀 ~ addRandomFlights ~ flightData:", flightData);
       const newFlight = new FlightModel(flightData);
       const savedFlight = await newFlight.save();
 
       // Populate the airline field
       const populatedFlight = await FlightModel.findById(savedFlight._id).populate('airline');
-
-      // Extract only the airline name
       const flightWithAirlineName = {
           ...populatedFlight.toObject(),
           airline: populatedFlight.airline.name

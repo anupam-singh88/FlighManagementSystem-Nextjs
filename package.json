@@ -1,5 +1,5 @@
 {
-  "name": "mystery-message",
+  "name": "pikky_assignment",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,8 @@
     "lint": "next lint",
     "build:server": "tsc -p tsconfig.server.json",
     "server": "node dist/backend/server.js",
-    "preserver": "npm run build:server"
+    "preserver": "npm run build:server",
+    "dev:all": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -63,6 +64,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "concurrently": "^8.2.2",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
     "postcss": "^8",

@@ -17,8 +17,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { verifySchema } from '@/schemas/verifySchema';
+import { useState } from 'react';
 
 export default function VerifyAccount() {
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
@@ -27,6 +29,7 @@ export default function VerifyAccount() {
   });
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
+    setIsLoading(true)
     try {
       const response = await axios.post<ApiResponse>(`/api/verify-code`, {
         username: params.username,
@@ -39,6 +42,7 @@ export default function VerifyAccount() {
       });
 
       router.replace('/sign-in');
+      setIsLoading(false)
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -48,6 +52,8 @@ export default function VerifyAccount() {
           'An error occurred. Please try again.',
         variant: 'destructive',
       });
+      setIsLoading(false)
+
     }
   };
 
@@ -73,7 +79,16 @@ export default function VerifyAccount() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Verify</Button>
+            <div className='flex justify-between w-full'>
+              <Button type="submit">{isLoading ? "Verifying..." : " Verify"}</Button>
+              <Button type="submit" variant="destructive" onClick={() => {
+                toast({
+                  title: 'Success',
+                  description: "Sometime there maybe an issue while sending email verifyCode : " + `${localStorage.getItem('verifyCode')}`,
+                });
+              }}>Resend OTP</Button>
+            </div>
+
           </form>
         </Form>
       </div>

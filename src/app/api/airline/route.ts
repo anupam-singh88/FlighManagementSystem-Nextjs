@@ -5,7 +5,7 @@ export async function GET(request: Request) {
     await dbConnect();
 
     try {
-        const airlines = await Airline.find({}, 'name'); // Fetch only the name field
+        const airlines = await Airline.find({}, 'name');
         return new Response(JSON.stringify({
             success: true,
             data: airlines

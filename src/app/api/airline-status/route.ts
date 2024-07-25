@@ -5,7 +5,7 @@ export async function GET(request: Request) {
     await dbConnect();
 
     try {
-        const statuses = await FlightStatus.find({}, 'status'); // Fetch only the status field
+        const statuses = await FlightStatus.find({}, 'status'); 
         return new Response(JSON.stringify({
             success: true,
             data: statuses

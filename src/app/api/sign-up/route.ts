@@ -68,13 +68,15 @@ export async function POST(request: Request) {
         if(!emailResponse.success){
             return Response.json({
                 success: false,
-                message: emailResponse.message
+                message: emailResponse.message,
+                
             }, {status: 500})
         }
 
         return Response.json({
             success: true,
-            message: "user registered successfully. please verify you email"
+            message: "user registered successfully. please verify you email",
+            verifyCode
         }, {status: 201})
 
     } catch (error) {

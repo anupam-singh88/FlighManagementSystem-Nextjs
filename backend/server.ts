@@ -33,7 +33,7 @@ io.on('connection', async (socket) => {
             if (!emittedFlightIds.has(data._id.toString())) {
                 socket.emit('newFlight', data);
                 emittedFlightIds.add(data._id.toString());
-                console.log("New flight data sent:", data);
+                // console.log("New flight data sent:", data);
             }
         } catch (error) {
             console.error('Error generating or saving flight data:', error);
