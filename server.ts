@@ -21,15 +21,18 @@ const io = new Server(server, {
 
 io.on('connection', (socket :any) => {
     console.log('a user connected');
-    socket.on('message', (msg :any) => {
-        console.log(msg)
-        io.emit('message', msg);
-    });
+    const intervalId = setInterval(() => {
+        const rowData = { timestamp: new Date(), value: Math.random() };
+        socket.emit('newRow', rowData);
+        // console.log(rowData)
+        // generateRandomFlight();
+    }, 5000);
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
+        clearInterval(intervalId); // Clear interval when user disconnects
     });
 });
-
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

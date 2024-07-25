@@ -324,7 +324,7 @@ function Page() {
                       className="p-2 border border-gray-300 rounded w-full"
                     >
                       {status.map((statusItem) => {
-                        console.log(statusItem, flight.status)
+                        // console.log(statusItem, flight.status)
                         return (
                           <option key={statusItem._id} value={statusItem._id}>
                             {statusItem.status}
